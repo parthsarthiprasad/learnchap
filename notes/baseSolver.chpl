@@ -17,18 +17,27 @@ var T: [0..rows+1,0..cols+1] real;  //2-d array of current colums
 var Tnew: [0..rows+1,0..cols+1] real; //newly computed temperatures
 
 T[1..rows,1..cols] = 25; //set initial temperature 
-
 delta = tolerance*10;
 
 writeln('temperature at iteration ',0 ,':', T[iout,jout]);
 //conditional statements in chapel
 while(count<niter && delta >=tolerance) do{
-    
+    //specify boundry for T
+    for i in 1..rows do 
+        T[i,cols+1] = 80.0*i/rows;    //right side
+    for j in 1..cols do 
+        T[rows+1,j] = 80.0*j/cols;    //bottom side
     count+=1;   //update the iteration counter
-    Tnew = T; //placeholder , computer Tnew from previous T
+    for i in 1..rows do {  //do something for row i
+        for j in 1..cols do {   //do something for row i and col j
+            Tnew[i,j] = 0.25*(T[i-1,j] + T[i+1,j] + T[i,j-1] + T[i,j+1]);
+        }
+    }
 
     //update delta, the greates temp difference between Tnew and T
     T=Tnew;  //update T once all elements of Tnew are computed
     //print T[out,jout] every nout steps
-    if count%nout ==0 then writeln('temperature at iteration ',count ,':     ', T[iout,jout]);
+    if count%nout ==0 then writeln('temperature at iteration ',count ,': ', T[iout,jout]);
 }
+
+writeln('temperature of top right corener' , T[1,cols]);
